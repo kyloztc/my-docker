@@ -13,9 +13,7 @@ var initCmd = &cobra.Command{
 	Short: "init cmd",
 	Run: func(cmd *cobra.Command, args []string) {
 		fmt.Printf("init args: %v\n", args)
-		command := args[0]
-		fmt.Printf("commond: %v\n", command)
-		err := container.RunContainerInitProcess(command, args)
+		err := container.RunContainerInitProcess()
 		if err != nil {
 			fmt.Printf("init cmd run error|%v\n", err)
 		}

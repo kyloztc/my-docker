@@ -7,12 +7,14 @@ import (
 	"syscall"
 )
 
-func NewParentProcess(tty bool, command string) *exec.Cmd {
+func NewParentProcess(tty bool, command []string) (*exec.Cmd, *os.File) {
 	fmt.Printf("new parent process|tty: %v|command: %v\n", tty, command)
-	args := []string{
-		"init", command,
+	readPipe, writePipe, err := NewPipe()
+	if err != nil {
+		fmt.Printf("new pipe error|%v\n", err)
+		return nil, nil
 	}
-	cmd := exec.Command("/proc/self/exe", args...)
+	cmd := exec.Command("/proc/self/exe", "init")
 	cmd.SysProcAttr = &syscall.SysProcAttr{
 		Cloneflags: syscall.CLONE_NEWUTS | syscall.CLONE_NEWPID | syscall.CLONE_NEWNS |
 			syscall.CLONE_NEWIPC | syscall.CLONE_NEWNET,
@@ -22,5 +24,15 @@ func NewParentProcess(tty bool, command string) *exec.Cmd {
 		cmd.Stdout = os.Stdout
 		cmd.Stderr = os.Stderr
 	}
-	return cmd
+	cmd.ExtraFiles = []*os.File{readPipe}
+	cmd.Dir = "/root/busybox"
+	return cmd, writePipe
+}
+
+func NewPipe() (*os.File, *os.File, error) {
+	read, write, err := os.Pipe()
+	if err != nil {
+		return nil, nil, err
+	}
+	return read, write, nil
 }
