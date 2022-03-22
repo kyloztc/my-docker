@@ -75,7 +75,7 @@ func CreateMountPoint(rootURL string, mntURL string) {
 	if err := os.Mkdir(mntURL, 0777); err != nil {
 		fmt.Printf("mkdir error|%v|path: %v", err, mntURL)
 	}
-	dirs := fmt.Sprintf("dirs=%swriteLayer:%sbuxybox", rootURL, rootURL)
+	dirs := fmt.Sprintf("dirs=%swriteLayer:%sbusybox", rootURL, rootURL)
 	fmt.Printf("dirs: %v\n", dirs)
 	cmd := exec.Command("mount", "-t", "aufs", "-o", dirs, "none", mntURL)
 	cmd.Stdout = os.Stdout
