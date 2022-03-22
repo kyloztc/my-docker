@@ -34,8 +34,11 @@ func Run(tty bool, command []string) {
 	}
 	sendInitCommand(command, writePipe)
 	parent.Wait()
+	mntURL := "/root/mnt/"
+	rootURL := "/root/"
+	container.DeleteWorkSpace(rootURL, mntURL)
 	fmt.Printf("my docker exit")
-	os.Exit(-1)
+	os.Exit(0)
 }
 
 func sendInitCommand(comArray []string, writePipe *os.File) {
