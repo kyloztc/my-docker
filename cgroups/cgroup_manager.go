@@ -5,11 +5,13 @@ import (
 	"my-docker/cgroups/subsystems"
 )
 
+// CgroupManager
 type CgroupManager struct {
 	Path           string
 	ResourceConfig *subsystems.ResourceConfig
 }
 
+// NewCgroupManager
 func NewCgroupManager(path string) *CgroupManager {
 	return &CgroupManager{
 		Path: path,

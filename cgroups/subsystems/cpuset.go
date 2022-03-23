@@ -8,9 +8,11 @@ import (
 	"strconv"
 )
 
+// CpusetSubSystem
 type CpusetSubSystem struct {
 }
 
+// Set 设置资源限制
 func (s *CpusetSubSystem) Set(cgroupPath string, res *ResourceConfig) error {
 	if subsysCgroupPath, err := GetCgroupPath(s.Name(), cgroupPath, true); err == nil {
 		if res.CpuSet != "" {
@@ -24,6 +26,7 @@ func (s *CpusetSubSystem) Set(cgroupPath string, res *ResourceConfig) error {
 	}
 }
 
+// Remove 移除资源限制
 func (s *CpusetSubSystem) Remove(cgroupPath string) error {
 	if subsysCgroupPath, err := GetCgroupPath(s.Name(), cgroupPath, false); err == nil {
 		return os.RemoveAll(subsysCgroupPath)
@@ -32,6 +35,7 @@ func (s *CpusetSubSystem) Remove(cgroupPath string) error {
 	}
 }
 
+// Apply 添加进程到cgroup
 func (s *CpusetSubSystem) Apply(cgroupPath string, pid int) error {
 	if subsysCgroupPath, err := GetCgroupPath(s.Name(), cgroupPath, false); err == nil {
 		if err := ioutil.WriteFile(path.Join(subsysCgroupPath, "tasks"), []byte(strconv.Itoa(pid)), 0644); err != nil {
@@ -43,6 +47,7 @@ func (s *CpusetSubSystem) Apply(cgroupPath string, pid int) error {
 	}
 }
 
+// Name subsystem名称
 func (s *CpusetSubSystem) Name() string {
 	return "cpuset"
 }

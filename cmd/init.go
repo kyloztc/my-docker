@@ -8,6 +8,7 @@ import (
 	"github.com/spf13/cobra"
 )
 
+// 初始化容器命令
 var initCmd = &cobra.Command{
 	Use:   "init",
 	Short: "init cmd",

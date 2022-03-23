@@ -10,6 +10,7 @@ import (
 	"github.com/spf13/cobra"
 )
 
+// run命令
 var runCmd = &cobra.Command{
 	Use:   "run",
 	Short: "run",
@@ -22,6 +23,7 @@ var runCmd = &cobra.Command{
 	},
 }
 
+// 运行
 func Run(tty bool, command []string) {
 	fmt.Printf("Run|tty: %v|command: %v", tty, command)
 	parent, writePipe := container.NewParentProcess(tty, command)
@@ -41,6 +43,7 @@ func Run(tty bool, command []string) {
 	os.Exit(0)
 }
 
+// 发送运行命令
 func sendInitCommand(comArray []string, writePipe *os.File) {
 	command := strings.Join(comArray, " ")
 	fmt.Printf("command all is %s\n", command)

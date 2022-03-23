@@ -10,6 +10,7 @@ import (
 	"syscall"
 )
 
+// 容器初始化
 func RunContainerInitProcess() error {
 	cmdArray := readUserCommand()
 	if cmdArray == nil || len(cmdArray) == 0 {

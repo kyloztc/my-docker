@@ -8,6 +8,7 @@ import (
 	"strings"
 )
 
+// FindCgroupMountpoint 查找cgroup挂载点
 func FindCgroupMountpoint(subsystem string) string {
 	f, err := os.Open("/proc/self/mountinfo")
 	if err != nil {
@@ -30,6 +31,7 @@ func FindCgroupMountpoint(subsystem string) string {
 	return ""
 }
 
+// GetCgroupPath 获取某一subsystem挂载点
 func GetCgroupPath(subsystem string, cgroupPath string, autoCreate bool) (string, error) {
 	cgroupRoot := FindCgroupMountpoint(subsystem)
 	fullCGroupPath := path.Join(cgroupRoot, cgroupPath)

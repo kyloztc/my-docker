@@ -7,13 +7,16 @@ import (
 	"syscall"
 )
 
+// NewParentProcess
 func NewParentProcess(tty bool, command []string) (*exec.Cmd, *os.File) {
 	fmt.Printf("new parent process|tty: %v|command: %v\n", tty, command)
+	// 使用pipe传递命令
 	readPipe, writePipe, err := NewPipe()
 	if err != nil {
 		fmt.Printf("new pipe error|%v\n", err)
 		return nil, nil
 	}
+	// 调用本进程init命令
 	cmd := exec.Command("/proc/self/exe", "init")
 	cmd.SysProcAttr = &syscall.SysProcAttr{
 		Cloneflags: syscall.CLONE_NEWUTS | syscall.CLONE_NEWPID | syscall.CLONE_NEWNS |
@@ -32,6 +35,7 @@ func NewParentProcess(tty bool, command []string) (*exec.Cmd, *os.File) {
 	return cmd, writePipe
 }
 
+// NewPipe
 func NewPipe() (*os.File, *os.File, error) {
 	read, write, err := os.Pipe()
 	if err != nil {
@@ -40,12 +44,14 @@ func NewPipe() (*os.File, *os.File, error) {
 	return read, write, nil
 }
 
+// 新建工作空间
 func NewWorkSpace(rootURL string, mntURL string) {
 	CreateReadOnlyLayer(rootURL)
 	CreateWriteLayer(rootURL)
 	CreateMountPoint(rootURL, mntURL)
 }
 
+// 创建只读层
 func CreateReadOnlyLayer(rootURL string) {
 	busyboxURL := fmt.Sprintf("%sbusybox/", rootURL)
 	busyboxTarURL := fmt.Sprintf("%sbusybox.tar", rootURL)
@@ -64,6 +70,7 @@ func CreateReadOnlyLayer(rootURL string) {
 	}
 }
 
+// 创建写入层
 func CreateWriteLayer(rootURL string) {
 	writeURL := fmt.Sprintf("%swriteLayer", rootURL)
 	if err := os.Mkdir(writeURL, 0777); err != nil {
@@ -71,6 +78,7 @@ func CreateWriteLayer(rootURL string) {
 	}
 }
 
+// 创建挂载点
 func CreateMountPoint(rootURL string, mntURL string) {
 	if err := os.Mkdir(mntURL, 0777); err != nil {
 		fmt.Printf("mkdir error|%v|path: %v", err, mntURL)
@@ -85,11 +93,13 @@ func CreateMountPoint(rootURL string, mntURL string) {
 	}
 }
 
+// 删除工作空间
 func DeleteWorkSpace(rootURL string, mntURL string) {
 	DeleteMountPoint(rootURL, mntURL)
 	DeleteWriteLayer(rootURL)
 }
 
+// 删除挂载点
 func DeleteMountPoint(rootURL string, mntURL string) {
 	cmd := exec.Command("umount", "-f", mntURL)
 	cmd.Stdout = os.Stdout
@@ -102,6 +112,7 @@ func DeleteMountPoint(rootURL string, mntURL string) {
 	}
 }
 
+// 删除写层
 func DeleteWriteLayer(rootURL string) {
 	writeURL := rootURL + "writeLayer/"
 	if err := os.RemoveAll(writeURL); err != nil {
@@ -109,6 +120,7 @@ func DeleteWriteLayer(rootURL string) {
 	}
 }
 
+// 判断路径是否存在
 func PathExists(path string) (bool, error) {
 	_, err := os.Stat(path)
 	if err == nil {
